@@ -1,26 +1,35 @@
 import { Injectable } from '@nestjs/common';
-import { CreateCompanyDto } from './dto/create-company.dto';
-import { UpdateCompanyDto } from './dto/update-company.dto';
+import {DatabaseService} from "../database/database.service";
+import {Prisma} from "generated/prisma/client";
+import { userInfo } from 'os';
 
 @Injectable()
 export class CompanyService {
-  create(createCompanyDto: CreateCompanyDto) {
-    return 'This action adds a new company';
+
+  constructor(private readonly databaseService: DatabaseService) {}
+
+  async create(userId: string, createCompanyDto: Prisma.CompanyInfoCreateInput) {
+    return await this.databaseService.companyInfo.create({
+      data: {
+        ...createCompanyDto,
+        owner: {connect: { id: userId } }
+      },
+    });
   }
 
-  findAll() {
-    return `This action returns all company`;
+  async findAll(userId: string) {
+    return await this.databaseService.companyInfo.findMany({where: {owner: {id: userId}}});
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} company`;
+  async findOne(id: string) {
+    return await this.databaseService.companyInfo.findUnique({ where: { id } });
   }
 
-  update(id: number, updateCompanyDto: UpdateCompanyDto) {
-    return `This action updates a #${id} company`;
+  async update(id: string, updateCompanyDto: Prisma.CompanyInfoUpdateInput) {
+    return await this.databaseService.companyInfo.update({ where: { id }, data: updateCompanyDto });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} company`;
+  async remove(id: string) {
+    return await this.databaseService.companyInfo.delete({ where: { id } });
   }
 }

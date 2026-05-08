@@ -1,34 +1,38 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { EventsService } from './events.service';
-import { CreateEventDto } from './dto/create-event.dto';
-import { UpdateEventDto } from './dto/update-event.dto';
+import {Prisma} from "generated/prisma/client";
 
 @Controller('events')
 export class EventsController {
   constructor(private readonly eventsService: EventsService) {}
 
   @Post()
-  create(@Body() createEventDto: CreateEventDto) {
-    return this.eventsService.create(createEventDto);
+  async create(
+    @Body() createEventDto: Prisma.EventCreateInput,
+    @Param('companyId') companyId: string
+  ) {
+    return await this.eventsService.create(companyId, createEventDto);
   }
 
   @Get()
-  findAll() {
-    return this.eventsService.findAll();
+  async findAll(
+    @Param('companyId') companyId: string
+  ) {
+    return await this.eventsService.findAll(companyId);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.eventsService.findOne(+id);
+  async findOne(@Param('id') id: string) {
+    return await this.eventsService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateEventDto: UpdateEventDto) {
-    return this.eventsService.update(+id, updateEventDto);
+  async update(@Param('id') id: string, @Body() updateEventDto: Prisma.EventUpdateInput) {
+    return await this.eventsService.update(id, updateEventDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.eventsService.remove(+id);
+  async remove(@Param('id') id: string) {
+    return await this.eventsService.remove(id);
   }
 }
