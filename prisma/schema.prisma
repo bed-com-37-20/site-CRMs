@@ -1,0 +1,82 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+  moduleFormat    = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  fname      String
+  lname      String
+  address    String
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  companyInfos CompanyInfo[]
+}
+
+model Product {
+  id          String   @id @default(uuid())
+  name        String
+  description String
+  price       Float
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  status     Boolean  @default(true)
+  avalailableQuantity Int
+  avalability Avalability @default(IN_STOCK)
+  companyInfoId String
+  companyInfo   CompanyInfo @relation(fields: [companyInfoId], references: [id])
+}
+
+enum Avalability {
+  IN_STOCK
+  OUT_OF_STOCK
+  DISCONTINUED
+}
+
+model CompanyInfo {
+  id          String   @id @default(uuid())
+  name        String
+  description String
+  address     String
+  phone       String
+  email       String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  products    Product[]
+  ownerId     String
+  owner       User @relation(fields: [ownerId], references: [id])
+  carriers    Carrier[]
+  events    Event[]
+}
+model Event {
+  id          String   @id @default(uuid())
+  name        String
+  description String
+  date        DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  organiserId String
+  organiser   CompanyInfo @relation(fields: [organiserId], references: [id])
+}
+model Carrier {
+  id          String   @id @default(uuid())
+  name        String
+  description String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  companyInfoId String
+  companyInfo   CompanyInfo @relation(fields: [companyInfoId], references: [id])
+}
