@@ -22,7 +22,7 @@ export class CompanyService {
   }
 
   async findOne(id: string) {
-    return await this.databaseService.companyInfo.findUnique({ where: { id } });
+    return await this.databaseService.companyInfo.findUnique({ where: { id ,relations: true} });
   }
 
   async update(id: string, updateCompanyDto: Prisma.CompanyInfoUpdateInput) {

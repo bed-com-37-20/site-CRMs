@@ -1,26 +1,29 @@
 import { Injectable } from '@nestjs/common';
-import { CreateCarrierDto } from './dto/create-carrier.dto';
-import { UpdateCarrierDto } from './dto/update-carrier.dto';
+import {Prisma} from "generated/prisma/client";
+import { DatabaseService } from '../database/database.service';
 
 @Injectable()
 export class CarriersService {
-  create(createCarrierDto: CreateCarrierDto) {
-    return 'This action adds a new carrier';
+  constructor(private readonly databaseService: DatabaseService) {}
+
+  async create(companyInfoId: string, createCarrierDto: Prisma.CarrierCreateInput) {
+    return await this.databaseService.carrier.create({ data: { ...createCarrierDto, companyInfo: { connect: { id: companyInfoId } } } });
   }
 
-  findAll() {
-    return `This action returns all carriers`;
+  async findAll(companyInfoId: string) {
+    return await this.databaseService.carrier.findMany({where: {companyInfo: {id: companyInfoId}}});
+  } 
+  
+
+  async findOne(id: string) {
+    return await this.databaseService.carrier.findUnique({ where: { id} });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} carrier`;
+  async update(id: string, updateCarrierDto: Prisma.CarrierUpdateInput) {
+    return await this.databaseService.carrier.update({ where: { id }, data: updateCarrierDto });  
   }
 
-  update(id: number, updateCarrierDto: UpdateCarrierDto) {
-    return `This action updates a #${id} carrier`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} carrier`;
+  async remove(id: string) {
+    return await this.databaseService.carrier.delete({ where: { id } });
   }
 }
