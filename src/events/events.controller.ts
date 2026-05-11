@@ -1,6 +1,7 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Query, Delete, Param, UseGuards,Request } from '@nestjs/common';
 import { EventsService } from './events.service';
 import {Prisma} from "generated/prisma/client";
+import { AuthGuard } from 'src/app/guards/authGuard';
 
 @Controller('events')
 export class EventsController {
@@ -9,20 +10,24 @@ export class EventsController {
   @Post()
   async create(
     @Body() createEventDto: Prisma.EventCreateInput,
-    @Param('companyId') companyId: string
+    @Query('id') companyId: string
   ) {
     return await this.eventsService.create(companyId, createEventDto);
   }
 
   @Get()
+  @UseGuards(AuthGuard)
   async findAll(
-    @Param('companyId') companyId: string
+    @Request() req,
+    @Query('id') companyId: string
   ) {
+    console.log(companyId)
     return await this.eventsService.findAll(companyId);
   }
 
   @Get(':id')
   async findOne(@Param('id') id: string) {
+     console.log(id)
     return await this.eventsService.findOne(id);
   }
 
@@ -33,6 +38,7 @@ export class EventsController {
 
   @Delete(':id')
   async remove(@Param('id') id: string) {
+    console.log(id)
     return await this.eventsService.remove(id);
   }
 }

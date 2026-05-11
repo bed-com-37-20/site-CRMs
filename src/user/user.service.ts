@@ -7,23 +7,24 @@ import { DatabaseService } from '../database/database.service';
 export class UserService {
 
   constructor( private readonly databaseService: DatabaseService) {}
-  create(createUserDto: Prisma.UserCreateInput) {
-    return this.databaseService.user.create({ data: createUserDto });
+  async create(createUserDto: Prisma.UserCreateInput) {
+    return await this.databaseService.user.create({ data: createUserDto });
   }
 
-  findAll() {
-    return this.databaseService.user.findMany();
+  async findAll() {
+    return await this.databaseService.user.findMany();
   }
 
-  findOne(id: string) {
-    return this.databaseService.user.findUnique({ where: { id } });
+ async findOne(id: string) {
+    return await this.databaseService.user.findUnique({ where: { id } });
   }
 
-  update(id: string, updateUserDto: Prisma.UserUpdateInput) {
-    return this.databaseService.user.update({ where: { id }, data: updateUserDto });
+ async update(id: string, updateUserDto: Prisma.UserUpdateInput) {
+    return await this.databaseService.user.update({ where: { id }, data: updateUserDto });
   }
 
-  remove(id: string) {
-    return this.databaseService.user.delete({ where: { id } });
+ async remove(id: string) {
+console.log(await this.databaseService.user.findUnique({where:{id}}))
+    return await this.databaseService.user.delete({ where: { id } });
   }
 }

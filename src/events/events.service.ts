@@ -12,18 +12,19 @@ export class EventsService {
   }
 
   async findAll(companyId: string) {
-    return await this.prisma.event.findMany({ where: { organiser: { id: companyId } } });
+    console.log(this.prisma.event.findMany())
+    return await this.prisma.event.findMany({ where: {organiserId: companyId } });
   }
 
   async findOne(id: string) {
-    return await this.prisma.event.findUnique({ where: { id } });
+    return await this.prisma.event.findUnique({ where: { id: id } });
   }
 
   async update(id: string, updateEventDto: Prisma.EventUpdateInput  ) {
-    return await this.prisma.event.update({ where: { id }, data: updateEventDto });
+    return await this.prisma.event.update({ where: { id: id }, data: updateEventDto });
   }
 
   async remove(id: string) {
-    return await this.prisma.event.delete({ where: { id } });
+    return await this.prisma.event.delete({ where: { id: id } });
   }
 }

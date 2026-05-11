@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Query, Delete, Param } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { Prisma } from 'generated/prisma/client';
 
@@ -10,13 +10,13 @@ export class ProductsController {
   @Post()
   async create(
     @Body() createProductDto: Prisma.ProductCreateInput,
-    @Param('companyId') companyId: string) 
+    @Query('id') companyId: string) 
   {
     return this.productsService.create(companyId, createProductDto);
   }
 
   @Get()
-  async findAll(companyId: string) {
+  async findAll(@Param('companyId') companyId: string) {
     return await this.productsService.findAll(companyId);
   }
 

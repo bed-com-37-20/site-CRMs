@@ -1,33 +1,44 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Delete, Param, UseGuards, Request } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { CompanyService } from './company.service';
-import {Prisma} from "generated/prisma/client";
+import { Prisma } from 'generated/prisma/client';
+import { AuthGuard } from 'src/app/guards/authGuard';
 
+@ApiTags('Company')
+@UseGuards(AuthGuard)
 @Controller('company')
 export class CompanyController {
   constructor(private readonly companyService: CompanyService) {}
 
   @Post()
-  create(@Body() createCompanyDto: Prisma.CompanyInfoCreateInput, @Query('userId') userId: string) {
-    return this.companyService.create(userId, createCompanyDto);
+async  create(
+    @Body() createCompanyDto: Prisma.CompanyInfoCreateInput,
+    @Request() req,
+  ) {
+    return await this.companyService.create(req.user.sub, createCompanyDto);
   }
 
   @Get()
-  findAll(@Query('userId') userId: string) {
-    return this.companyService.findAll(userId);
+ async findAll(@Request() req) {
+    return await this.companyService.findAll(req.user.sub);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.companyService.findOne(id);
+  async findOne(@Param('id') id: string) {
+    return await this.companyService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCompanyDto: Prisma.CompanyInfoUpdateInput) {
-    return this.companyService.update(id, updateCompanyDto);
+  async update(
+    @Param('id') id: string,
+    @Body() updateCompanyDto: Prisma.CompanyInfoUpdateInput,
+  ) {
+    return await this.companyService.update(id, updateCompanyDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.companyService.remove(id);
+
+  async remove(@Param('id') id: string) {
+    return await this.companyService.remove(id);
   }
 }
