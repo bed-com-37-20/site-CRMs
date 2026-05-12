@@ -8,11 +8,12 @@ import { ProductsModule } from './products/products.module';
 import { CompanyModule } from './company/company.module';
 import { EventsModule } from './events/events.module';
 import { CarriersModule } from './carriers/carriers.module';
+import { MinioModule } from './minio/minio.module';
 
 @Module({
   imports: [ConfigModule.forRoot({
     isGlobal: true,
-  }), DatabaseModule, UserModule, ProductsModule, CompanyModule, EventsModule, CarriersModule],
+  }), DatabaseModule, MinioModule, UserModule, ProductsModule, CompanyModule, EventsModule, CarriersModule],
   controllers: [AppController],
   providers: [AppService],
 })

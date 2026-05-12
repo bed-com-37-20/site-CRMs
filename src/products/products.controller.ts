@@ -1,7 +1,20 @@
-import { Controller, Get, Post, Body, Patch, Query, Delete, Param } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Query,
+  Delete,
+  Param,
+  UseInterceptors,
+  UploadedFile,
+  Response,
+  NotFoundException,
+} from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { ProductsService } from './products.service';
 import { Prisma } from 'generated/prisma/client';
-
 
 @Controller('products')
 export class ProductsController {
@@ -10,8 +23,8 @@ export class ProductsController {
   @Post()
   async create(
     @Body() createProductDto: Prisma.ProductCreateInput,
-    @Query('id') companyId: string) 
-  {
+    @Query('id') companyId: string,
+  ) {
     return this.productsService.create(companyId, createProductDto);
   }
 
@@ -25,13 +38,44 @@ export class ProductsController {
     return await this.productsService.findOne(id);
   }
 
+  @Get(':id/image')
+  async getProductImage(@Param('id') id: string, @Response() res) {
+    try {
+      const stream = await this.productsService.getProductImageStream(id);
+      res.set({
+        'Content-Type': 'image/jpeg',
+        'Cache-Control': 'public, max-age=3600',
+      });
+      stream.pipe(res);
+    } catch (error) {
+      throw new NotFoundException('Product image not found');
+    }
+  }
+
   @Patch(':id')
-  async update(@Param('id') id: string, @Body() updateProductDto: Prisma.ProductUpdateInput) {
+  async update(
+    @Param('id') id: string,
+    @Body() updateProductDto: Prisma.ProductUpdateInput,
+  ) {
     return await this.productsService.update(id, updateProductDto);
   }
 
   @Delete(':id')
   async remove(@Param('id') id: string) {
     return await this.productsService.remove(id);
+  }
+
+  @Post(':id/upload-image')
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadProductImage(
+    @Param('id') id: string,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return await this.productsService.uploadProductImage(id, file);
+  }
+
+  @Delete(':id/image-delete')
+  async deleteProductImage(@Param('id') id: string) {
+    return await this.productsService.deleteProductImage(id);
   }
 }

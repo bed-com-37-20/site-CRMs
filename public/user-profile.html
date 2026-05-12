@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile Viewer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+
+        .search-section {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        button {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .loading {
+            text-align: center;
+            color: #667eea;
+            display: none;
+            margin: 20px 0;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            display: none;
+            background: #fee;
+            border: 1px solid #fcc;
+            color: #c33;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            animation: slideIn 0.3s ease;
+        }
+
+        .error.show {
+            display: block;
+        }
+
+        .success {
+            display: none;
+            background: #e8f5e9;
+            border: 1px solid #c8e6c9;
+            color: #2e7d32;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            animation: slideIn 0.3s ease;
+        }
+
+        .success.show {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .profile-card {
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+
+        .profile-card.show {
+            display: block;
+        }
+
+        .profile-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .profile-pic {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            border: 4px solid #667eea;
+            overflow: hidden;
+            object-fit: cover;
+        }
+
+        .profile-pic img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .no-pic {
+            color: #999;
+            font-size: 40px;
+        }
+
+        .profile-name {
+            font-size: 24px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .profile-email {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .info-grid {
+            display: grid;
+            gap: 15px;
+        }
+
+        .info-item {
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .info-label {
+            font-size: 12px;
+            color: #999;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            font-size: 14px;
+            color: #333;
+            word-break: break-all;
+        }
+
+        .pic-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            justify-content: center;
+        }
+
+        .pic-actions button {
+            flex: 1;
+            padding: 10px;
+            font-size: 12px;
+        }
+
+        .upload-section {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid #e0e0e0;
+        }
+
+        .upload-section h3 {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-input-wrapper input[type=file] {
+            position: absolute;
+            left: -9999px;
+        }
+
+        .file-input-label {
+            display: block;
+            padding: 12px;
+            background: #f8f9fa;
+            border: 2px dashed #667eea;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: #667eea;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .file-input-label:hover {
+            background: #f0f4ff;
+        }
+
+        .file-name {
+            font-size: 12px;
+            color: #666;
+            margin-top: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>👤 User Profile Viewer</h1>
+
+        <div class="search-section">
+            <input 
+                type="text" 
+                id="userIdInput" 
+                placeholder="Enter user ID..." 
+                onkeypress="if(event.key === 'Enter') getUser()"
+            >
+            <button onclick="getUser()">Search</button>
+        </div>
+
+        <div class="error" id="errorMessage"></div>
+        <div class="success" id="successMessage"></div>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Loading user profile...</p>
+        </div>
+
+        <div class="profile-card" id="profileCard">
+            <div class="profile-header">
+                <div class="profile-pic" id="profilePic">
+                    <span class="no-pic">📷</span>
+                </div>
+                <div class="profile-name" id="profileName">-</div>
+                <div class="profile-email" id="profileEmail">-</div>
+            </div>
+
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">User ID</div>
+                    <div class="info-value" id="userId">-</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">First Name</div>
+                    <div class="info-value" id="firstName">-</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Last Name</div>
+                    <div class="info-value" id="lastName">-</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Email</div>
+                    <div class="info-value" id="emailInfo">-</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Address</div>
+                    <div class="info-value" id="address">-</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Created At</div>
+                    <div class="info-value" id="createdAt">-</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Updated At</div>
+                    <div class="info-value" id="updatedAt">-</div>
+                </div>
+            </div>
+
+            <div class="upload-section">
+                <h3>📸 Update Profile Picture</h3>
+                <div class="file-input-wrapper">
+                    <input 
+                        type="file" 
+                        id="profilePicFile" 
+                        accept="image/*"
+                        onchange="updateFileName()"
+                    >
+                    <label for="profilePicFile" class="file-input-label">
+                        Click to select image
+                    </label>
+                    <div class="file-name" id="fileName"></div>
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 10px;">
+                    <button onclick="uploadProfilePic()" style="flex: 1;">Upload Picture</button>
+                    <button onclick="deleteProfilePic()" style="flex: 1; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">Delete Picture</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://161.97.94.92:3000';
+
+        async function getUser() {
+            const userId = document.getElementById('userIdInput').value.trim();
+            if (!userId) {
+                showError('Please enter a user ID');
+                return;
+            }
+
+            showLoading(true);
+            clearMessages();
+
+            try {
+                const response = await fetch(`${API_BASE}/user/${userId}`);
+                if (!response.ok) {
+                    throw new Error(`User not found (${response.status})`);
+                }
+
+                const user = await response.json();
+                displayUserProfile(user);
+                showSuccess('User profile loaded successfully');
+            } catch (error) {
+                showError(error.message || 'Failed to fetch user');
+                document.getElementById('profileCard').classList.remove('show');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        function displayUserProfile(user) {
+            // Display profile picture using proxy endpoint
+            const profilePicDiv = document.getElementById('profilePic');
+            if (user.profilePicUrl) {
+                // Use the proxy endpoint instead of direct MinIO URL to avoid CORS issues
+                profilePicDiv.innerHTML = `<img src="${API_BASE}/user/${user.id}/profile-pic" alt="Profile Picture" onerror="this.parentElement.innerHTML='<span class=\"no-pic\">📷</span>'">`;
+            } else {
+                profilePicDiv.innerHTML = '<span class="no-pic">📷</span>';
+            }
+
+            // Display user info
+            document.getElementById('profileName').textContent = `${user.fname} ${user.lname}`;
+            document.getElementById('profileEmail').textContent = user.email;
+            document.getElementById('userId').textContent = user.id;
+            document.getElementById('firstName').textContent = user.fname;
+            document.getElementById('lastName').textContent = user.lname;
+            document.getElementById('emailInfo').textContent = user.email;
+            document.getElementById('address').textContent = user.address;
+            document.getElementById('createdAt').textContent = new Date(user.createdAt).toLocaleString();
+            document.getElementById('updatedAt').textContent = new Date(user.updatedAt).toLocaleString();
+
+            document.getElementById('profileCard').classList.add('show');
+        }
+
+        async function uploadProfilePic() {
+            const userId = document.getElementById('userIdInput').value.trim();
+            const fileInput = document.getElementById('profilePicFile');
+            const file = fileInput.files[0];
+
+            if (!userId) {
+                showError('Please search for a user first');
+                return;
+            }
+
+            if (!file) {
+                showError('Please select a file');
+                return;
+            }
+
+            showLoading(true);
+            clearMessages();
+
+            try {
+                const formData = new FormData();
+                formData.append('file', file);
+
+                const response = await fetch(`${API_BASE}/user/${userId}/upload-profile-pic`, {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Upload failed (${response.status})`);
+                }
+
+                const result = await response.json();
+                showSuccess('Profile picture uploaded successfully');
+                fileInput.value = '';
+                document.getElementById('fileName').textContent = '';
+                
+                // Refresh user profile
+                await getUser();
+            } catch (error) {
+                showError(error.message || 'Failed to upload picture');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        async function deleteProfilePic() {
+            const userId = document.getElementById('userIdInput').value.trim();
+            if (!userId) {
+                showError('Please search for a user first');
+                return;
+            }
+
+            if (!confirm('Are you sure you want to delete the profile picture?')) {
+                return;
+            }
+
+            showLoading(true);
+            clearMessages();
+
+            try {
+                const response = await fetch(`${API_BASE}/user/${userId}/profile-pic-delete`, {
+                    method: 'DELETE',
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Delete failed (${response.status})`);
+                }
+
+                showSuccess('Profile picture deleted successfully');
+                
+                // Refresh user profile
+                await getUser();
+            } catch (error) {
+                showError(error.message || 'Failed to delete picture');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        function updateFileName() {
+            const fileInput = document.getElementById('profilePicFile');
+            const fileName = document.getElementById('fileName');
+            if (fileInput.files[0]) {
+                fileName.textContent = `Selected: ${fileInput.files[0].name}`;
+            } else {
+                fileName.textContent = '';
+            }
+        }
+
+        function showLoading(show) {
+            document.getElementById('loading').classList.toggle('show', show);
+        }
+
+        function showError(message) {
+            const errorEl = document.getElementById('errorMessage');
+            errorEl.textContent = message;
+            errorEl.classList.add('show');
+        }
+
+        function showSuccess(message) {
+            const successEl = document.getElementById('successMessage');
+            successEl.textContent = message;
+            successEl.classList.add('show');
+        }
+
+        function clearMessages() {
+            document.getElementById('errorMessage').classList.remove('show');
+            document.getElementById('successMessage').classList.remove('show');
+        }
+
+        // Auto-focus on input on load
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('userIdInput').focus();
+        });
+    </script>
+</body>
+</html>

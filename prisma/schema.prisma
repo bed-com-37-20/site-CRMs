@@ -14,30 +14,32 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  fname      String
-  lname      String
-  address    String
-  password  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id            String   @id @default(uuid())
+  email         String   @unique
+  fname         String
+  lname         String
+  address       String
+  password      String
+  profilePicUrl String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
   
   companyInfos CompanyInfo[]
 }
 
 model Product {
-  id          String   @id @default(uuid())
-  name        String
-  description String
-  price       Float
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  status     Boolean  @default(true)
+  id                  String   @id @default(uuid())
+  name                String
+  description         String
+  price               Float
+  imageUrl            String?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  status              Boolean  @default(true)
   avalailableQuantity Int
-  avalability Avalability @default(IN_STOCK)
-  companyInfoId String
-  companyInfo   CompanyInfo @relation(fields: [companyInfoId], references: [id])
+  avalability         Avalability @default(IN_STOCK)
+  companyInfoId       String
+  companyInfo         CompanyInfo @relation(fields: [companyInfoId], references: [id])
 }
 
 enum Avalability {
@@ -47,24 +49,27 @@ enum Avalability {
 }
 
 model CompanyInfo {
-  id          String   @id @default(uuid())
-  name        String
-  description String
-  address     String
-  phone       String
-  email       String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  products    Product[]
-  ownerId     String
-  owner       User @relation(fields: [ownerId], references: [id])
-  carriers    Carrier[]
-  events    Event[]
+  id            String   @id @default(uuid())
+  name          String
+  description   String
+  address       String
+  phone         String
+  email         String
+  logoUrl       String?
+  coverImageUrl String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  products      Product[]
+  ownerId       String
+  owner         User @relation(fields: [ownerId], references: [id])
+  carriers      Carrier[]
+  events        Event[]
 }
 model Event {
   id          String   @id @default(uuid())
   name        String
   description String
+  imageUrl    String?
   date        DateTime
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -72,11 +77,34 @@ model Event {
   organiser   CompanyInfo @relation(fields: [organiserId], references: [id])
 }
 model Carrier {
-  id          String   @id @default(uuid())
-  name        String
-  description String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id            String   @id @default(uuid())
+  name          String
+  description   String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
   companyInfoId String
   companyInfo   CompanyInfo @relation(fields: [companyInfoId], references: [id])
+  applications  Application[]
+}
+
+model Application {
+  id            String   @id @default(uuid())
+  carrierId     String
+  carrier       Carrier  @relation(fields: [carrierId], references: [id], onDelete: Cascade)
+  fullName      String
+  email         String
+  phone         String
+  position      String
+  resumeUrl     String
+  coverlettUrUrl String?
+  status        ApplicationStatus @default(PENDING)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+enum ApplicationStatus {
+  PENDING
+  REVIEWING
+  ACCEPTED
+  REJECTED
 }
