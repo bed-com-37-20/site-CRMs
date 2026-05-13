@@ -25,6 +25,7 @@ model User {
   updatedAt     DateTime @updatedAt
   
   companyInfos CompanyInfo[]
+  // products     Product[]
 }
 
 model Product {
@@ -40,6 +41,8 @@ model Product {
   avalability         Avalability @default(IN_STOCK)
   companyInfoId       String
   companyInfo         CompanyInfo @relation(fields: [companyInfoId], references: [id])
+  // ownerId             String @default(uuid())
+  // owner               User @relation(fields: [ownerId], references: [id])
 }
 
 enum Avalability {
@@ -55,6 +58,9 @@ model CompanyInfo {
   address       String
   phone         String
   email         String
+  story         String?
+  missionPoints String[]
+  whyChooseUs   Json?
   logoUrl       String?
   coverImageUrl String?
   createdAt     DateTime @default(now())

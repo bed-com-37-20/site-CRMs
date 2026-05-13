@@ -1,98 +1,583 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# tapi-server API Documentation
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+## Overview
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+`tapi-server` is a NestJS backend that manages authentication, users, companies, products, events, and carrier applications. The server exposes REST endpoints for CRUD operations, file uploads, and image proxying.
 
-## Description
+## Base URL
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- Default local base URL: `http://localhost:3000`
 
-## Project setup
+## Setup
 
 ```bash
-$ npm install
+cd tapi-server
+npm install
 ```
 
-## Compile and run the project
+## Run
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+npm run start:dev
 ```
 
-## Run tests
+## Authentication
 
-```bash
-# unit tests
-$ npm run test
+Many endpoints require a Bearer JWT token in the `Authorization` header.
 
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+```http
+Authorization: Bearer <token>
 ```
 
-## Deployment
+The `AuthGuard` validates the JWT and exposes the token payload as `req.user`.
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+---
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+## Endpoints
 
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+### Auth
+
+#### POST `/auth/login`
+
+Request body:
+
+```json
+{
+  "email": "user@example.com",
+  "password": "password"
+}
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+Response:
 
-## Resources
+```json
+{
+  "user": {
+    "id": "uuid",
+    "email": "user@example.com",
+    "fname": "First",
+    "lname": "Last",
+    "address": "123 Street",
+    "password": "hashed-or-plain",
+    "profilePicUrl": null,
+    "createdAt": "2026-05-13T00:00:00.000Z",
+    "updatedAt": "2026-05-13T00:00:00.000Z"
+  },
+  "token": "jwt.token.string"
+}
+```
 
-Check out a few resources that may come in handy when working with NestJS:
+#### PATCH `/auth/reset-password`
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+Request body:
 
-## Support
+```json
+{
+  "email": "user@example.com",
+  "newPassword": "newPassword123"
+}
+```
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+Response:
 
-## Stay in touch
+```json
+true
+```
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+#### GET `/auth/get-current-user`
 
-## License
+Headers:
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+```http
+Authorization: Bearer <token>
+```
+
+Response:
+
+```json
+{
+  "id": "uuid",
+  "email": "user@example.com",
+  "fname": "First",
+  "lname": "Last",
+  "address": "123 Street",
+  "password": "hashed-or-plain",
+  "profilePicUrl": null,
+  "createdAt": "2026-05-13T00:00:00.000Z",
+  "updatedAt": "2026-05-13T00:00:00.000Z"
+}
+```
+
+---
+
+### User
+
+#### POST `/user`
+
+Request body:
+
+```json
+{
+  "email": "user@example.com",
+  "fname": "First",
+  "lname": "Last",
+  "address": "123 Street",
+  "password": "password",
+  "profilePicUrl": null
+}
+```
+
+Response: created user object.
+
+#### GET `/user`
+
+Response: array of user objects.
+
+#### GET `/user/:id/profile-pic`
+
+Response: JPEG image stream.
+
+#### GET `/user/:id`
+
+Response: user object.
+
+#### PATCH `/user/:id`
+
+Request body: valid `Prisma.UserUpdateInput` fields.
+
+Response: updated user object.
+
+#### DELETE `/user/:id`
+
+Response: deleted user object or deletion result.
+
+#### POST `/user/:id/upload-profile-pic`
+
+Headers:
+
+```http
+Content-Type: multipart/form-data
+```
+
+Form fields:
+
+- `file`: profile picture file upload
+
+Response: upload metadata or updated user record.
+
+#### DELETE `/user/:id/profile-pic-delete`
+
+Response: deletion result.
+
+---
+
+### Company
+
+> All `/company` routes require authentication.
+
+#### POST `/company`
+
+Request body:
+
+```json
+{
+  "name": "Company Name",
+  "description": "Company description",
+  "address": "123 Business Blvd",
+  "phone": "555-1234",
+  "email": "company@example.com"
+}
+```
+
+Response: created company record.
+
+#### GET `/company`
+
+Response: array of company records owned by the authenticated user.
+
+#### GET `/company/:id`
+
+Response: company object.
+
+#### GET `/company/:id/logo`
+
+Response: JPEG image stream.
+
+#### GET `/company/:id/cover-image`
+
+Response: JPEG image stream.
+
+#### PATCH `/company/:id`
+
+Request body: valid `Prisma.CompanyInfoUpdateInput` fields.
+
+Response: updated company object.
+
+#### DELETE `/company/:id`
+
+Response: deleted company record or deletion result.
+
+#### POST `/company/:id/upload-logo`
+
+Form field:
+
+- `file`: company logo file
+
+Response: upload metadata.
+
+#### POST `/company/:id/upload-cover-image`
+
+Form field:
+
+- `file`: company cover image file
+
+Response: upload metadata.
+
+#### POST `/company/:id/upload-file`
+
+Form field:
+
+- `file`: any company-related file
+
+Response: upload metadata.
+
+#### DELETE `/company/:id/logo-delete`
+
+Response: deletion result.
+
+#### DELETE `/company/:id/cover-image-delete`
+
+Response: deletion result.
+
+---
+
+### Products
+
+#### POST `/products`
+
+Query string:
+
+```http
+?id=<companyId>
+```
+
+Request body:
+
+```json
+{
+  "name": "Product Name",
+  "description": "Product details",
+  "price": 9.99,
+  "avalailableQuantity": 10,
+  "avalability": "IN_STOCK"
+}
+```
+
+Response: created product object.
+
+#### GET `/products`
+
+Response: array of product objects.
+
+#### GET `/products/:id`
+
+Response: product object.
+
+#### GET `/products/:id/image`
+
+Response: JPEG image stream.
+
+#### PATCH `/products/:id`
+
+Request body: valid `Prisma.ProductUpdateInput` fields.
+
+Response: updated product object.
+
+#### DELETE `/products/:id`
+
+Response: deleted product object or deletion result.
+
+#### POST `/products/:id/upload-image`
+
+Form field:
+
+- `file`: product image file
+
+Response: upload metadata.
+
+#### DELETE `/products/:id/image-delete`
+
+Response: deletion result.
+
+---
+
+### Events
+
+#### POST `/events`
+
+Query string:
+
+```http
+?id=<companyId>
+```
+
+Request body:
+
+```json
+{
+  "name": "Event Title",
+  "description": "Event description",
+  "date": "2026-06-01T12:00:00.000Z"
+}
+```
+
+Response: created event object.
+
+#### GET `/events`
+
+Query string:
+
+```http
+?id=<companyId>
+```
+```
+
+Headers:
+
+```http
+Authorization: Bearer <token>
+```
+
+Response: array of event objects.
+
+#### GET `/events/:id`
+
+Response: event object.
+
+#### GET `/events/:id/image`
+
+Response: JPEG image stream.
+
+#### PATCH `/events/:id`
+
+Request body: valid `Prisma.EventUpdateInput` fields.
+
+Response: updated event object.
+
+#### DELETE `/events/:id`
+
+Response: deleted event object or deletion result.
+
+#### POST `/events/:id/upload-image`
+
+Form field:
+
+- `file`: event image file
+
+Response: upload metadata.
+
+#### DELETE `/events/:id/image-delete`
+
+Response: deletion result.
+
+---
+
+### Carriers
+
+#### POST `/carriers`
+
+Query string:
+
+```http
+?companyInfoId=<companyId>
+```
+
+Request body:
+
+```json
+{
+  "name": "Carrier Name",
+  "description": "Carrier description"
+}
+```
+
+Response: created carrier object.
+
+#### GET `/carriers`
+
+Query string:
+
+```http
+?companyInfoId=<companyId>
+```
+```
+
+Response: array of carrier objects.
+
+#### GET `/carriers/:id`
+
+Response: carrier object.
+
+#### PATCH `/carriers/:id`
+
+Request body: valid `Prisma.CarrierUpdateInput` fields.
+
+Response: updated carrier object.
+
+#### DELETE `/carriers/:id`
+
+Response: deleted carrier object or deletion result.
+
+#### POST `/carriers/:id/apply`
+
+Headers:
+
+```http
+Content-Type: multipart/form-data
+```
+
+Fields:
+
+- `fullName` (string)
+- `email` (string)
+- `phone` (string)
+- `position` (string)
+- `resume` (file)
+- `coverLetter` (file)
+
+Response: created application object.
+
+#### GET `/carriers/:id/applications`
+
+Response: array of application objects.
+
+#### GET `/carriers/applications/:applicationId`
+
+Response: application object.
+
+#### PATCH `/carriers/applications/:applicationId/status`
+
+Request body:
+
+```json
+{
+  "status": "PENDING"
+}
+```
+
+Response: updated application object.
+
+#### DELETE `/carriers/applications/:applicationId`
+
+Response: deleted application object or deletion result.
+
+---
+
+## Model shapes
+
+### User
+
+```json
+{
+  "id": "uuid",
+  "email": "string",
+  "fname": "string",
+  "lname": "string",
+  "address": "string",
+  "password": "string",
+  "profilePicUrl": "string | null",
+  "createdAt": "string",
+  "updatedAt": "string"
+}
+```
+
+### CompanyInfo
+
+```json
+{
+  "id": "uuid",
+  "name": "string",
+  "description": "string",
+  "address": "string",
+  "phone": "string",
+  "email": "string",
+  "logoUrl": "string | null",
+  "coverImageUrl": "string | null",
+  "createdAt": "string",
+  "updatedAt": "string",
+  "ownerId": "uuid"
+}
+```
+
+### Product
+
+```json
+{
+  "id": "uuid",
+  "name": "string",
+  "description": "string",
+  "price": 0.0,
+  "imageUrl": "string | null",
+  "createdAt": "string",
+  "updatedAt": "string",
+  "status": true,
+  "avalailableQuantity": 0,
+  "avalability": "IN_STOCK",
+  "companyInfoId": "uuid"
+}
+```
+
+### Event
+
+```json
+{
+  "id": "uuid",
+  "name": "string",
+  "description": "string",
+  "imageUrl": "string | null",
+  "date": "string",
+  "createdAt": "string",
+  "updatedAt": "string",
+  "organiserId": "uuid"
+}
+```
+
+### Carrier
+
+```json
+{
+  "id": "uuid",
+  "name": "string",
+  "description": "string",
+  "createdAt": "string",
+  "updatedAt": "string",
+  "companyInfoId": "uuid"
+}
+```
+
+### Application
+
+```json
+{
+  "id": "uuid",
+  "carrierId": "uuid",
+  "fullName": "string",
+  "email": "string",
+  "phone": "string",
+  "position": "string",
+  "resumeUrl": "string",
+  "coverlettUrUrl": "string | null",
+  "status": "PENDING",
+  "createdAt": "string",
+  "updatedAt": "string"
+}
+```
+
+## Notes
+
+- Image endpoints return binary JPEG streams and are not JSON responses.
+- `/company` routes require JWT authentication.
+- `GET /events` requires JWT authentication.
+- File uploads use `multipart/form-data`.
+- The app uses `process.env.JWT_SECRET` for token signing and validation.
+

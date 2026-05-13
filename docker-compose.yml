@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  server:
+    build: .
+    container_name: tapi-server
+    restart: unless-stopped
+    ports:
+      - "3001:3000"
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=admin
+      - DB_PASSWORD=admin123
+      - DB_NAME=mydb
+      - MINIO_HOST=161.97.94.92
+      - MINIO_ENDPOINT=9000
+      - MINIO_ACCESS_KEY=admin
+      - MINIO_SECRET_KEY=banda@123
+      - DATABASE_URL="postgres://admin:admin123@localhost:5432/mydb"
+      - JWT_SECRET=u+T6qtPbiWPgZT/X0CiDREI1zwcZek94HLEF/mcQaoxsPhfoWvvhd/CjD9xubAYXU6aOYJIchBnXi8iSMCUlQQ==
+    env_file:
+      - .env
+    # depends_on:
+    #   postgres:
+    #     condition: service_healthy

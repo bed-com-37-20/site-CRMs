@@ -3,6 +3,7 @@ import { Prisma } from 'generated/prisma/client';
 import { DatabaseService } from 'src/database/database.service';
 import { MinioService } from 'src/minio/minio.service';
 import { v4 as uuid } from 'uuid';
+import { CompanyService } from '../company/company.service';  
 
 @Injectable()
 export class ProductsService {
@@ -11,16 +12,18 @@ export class ProductsService {
   constructor(
     private readonly prisma: DatabaseService,
     private readonly minioService: MinioService,
+    private readonly companyService: CompanyService
   ) {}
 
   async create(
+    userId: string,
     companyId: string,
     createProductDto: Prisma.ProductCreateInput,
   ) {
     return await this.prisma.product.create({
       data: {
         ...createProductDto,
-        companyInfo: { connect: { id: companyId } },
+        companyInfo: { connect: { id: companyId } }
       },
     });
   }

@@ -1,0 +1,12 @@
+{
+	"folders": [
+		{
+			"path": ".."
+		},
+		{
+			"name": "tapi-tapi-food-web",
+			"path": "../tapi-tapi-food-web"
+		}
+	],
+	"settings": {}
+}

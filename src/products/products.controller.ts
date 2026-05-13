@@ -11,25 +11,35 @@ import {
   UploadedFile,
   Response,
   NotFoundException,
+  Request,
+  UseGuards,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ProductsService } from './products.service';
 import { Prisma } from 'generated/prisma/client';
+import { AuthGuard } from 'src/app/guards/authGuard';
 
 @Controller('products')
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @Post()
+  @UseGuards(AuthGuard)
   async create(
     @Body() createProductDto: Prisma.ProductCreateInput,
     @Query('id') companyId: string,
+    @Request() req,
   ) {
-    return this.productsService.create(companyId, createProductDto);
+   //console.log('Creating product for companyId:', req.user.sub, 'with data:', createProductDto);
+    return this.productsService.create(req.user.sub,companyId, createProductDto);
   }
 
   @Get()
-  async findAll(@Param('companyId') companyId: string) {
+  @UseGuards(AuthGuard)
+  async findAll(@Request() req,@Param() companyId: string ){
+   //const companyId = req.user.sub;
+
+    console.log('Fetching products for companyId:', companyId);
     return await this.productsService.findAll(companyId);
   }
 

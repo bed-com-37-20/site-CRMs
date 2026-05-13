@@ -6,6 +6,6 @@ import { MinioModule } from '../minio/minio.module';
 @Module({
   imports: [MinioModule],
   controllers: [CarriersController],
-  providers: [CarriersService],
+  providers: [CarriersService]
 })
 export class CarriersModule {}

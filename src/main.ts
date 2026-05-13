@@ -10,8 +10,8 @@ async function bootstrap() {
   // Enable CORS for file uploads
   app.enableCors({
     origin: '*',
-    credentials: true,
-  });
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE'
+  }  );
 
   // Serve static files from public folder
   app.useStaticAssets(join(__dirname, '..', 'public'));
