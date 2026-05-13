@@ -77,6 +77,7 @@ model Event {
   description String
   imageUrl    String?
   date        DateTime
+  category    String @default("Other")
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   organiserId String
