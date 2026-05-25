@@ -115,3 +115,22 @@ enum ApplicationStatus {
   ACCEPTED
   REJECTED
 }
+
+// Add this to your existing Prisma schema
+model File {
+  id          String   @id @default(uuid())
+  filename    String
+  originalName String
+  mimeType    String
+  size        Int
+  path        String
+  url         String
+  entityType   String   // e.g., 'User', 'Product', 'CompanyInfo', 'Event', 'Application'
+  entityId     String   // The ID of the associated entity
+  fieldName    String   // e.g., 'profilePicUrl', 'imageUrl', 'logoUrl', 'coverImageUrl'
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([entityType, entityId, fieldName])
+  @@index([entityType, entityId])
+}

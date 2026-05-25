@@ -24,6 +24,7 @@ export class EventsController {
   constructor(private readonly eventsService: EventsService) {}
 
   @Post()
+  @UseGuards(AuthGuard)
   async create(
     @Body() createEventDto: Prisma.EventCreateInput,
     @Query('id') companyId: string,
@@ -32,10 +33,9 @@ export class EventsController {
   }
 
   @Get()
-  @UseGuards(AuthGuard)
-  async findAll(@Request() req, @Query('id') companyId: string) {
-    console.log(companyId);
-    return await this.eventsService.findAll(companyId);
+ 
+  async findAll() {
+    return await this.eventsService.findAll();
   }
 
   @Get(':id')

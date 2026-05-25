@@ -27,8 +27,8 @@ export class CarriersController {
   }
 
   @Get()
-  async findAll(@Query('companyInfoId') companyInfoId: string) {
-    return await this.carriersService.findAll(companyInfoId);
+  async findAll() {
+    return await this.carriersService.findAll();
   }
 
   @Get(':id')

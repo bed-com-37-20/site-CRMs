@@ -25,10 +25,8 @@ export class CarriersService {
     });
   }
 
-  async findAll(companyInfoId: string) {
-    return await this.databaseService.carrier.findMany({
-      where: { companyInfo: { id: companyInfoId } },
-    });
+  async findAll() {
+    return await this.databaseService.carrier.findMany();
   }
 
   async findOne(id: string) {

@@ -25,11 +25,9 @@ export class EventsService {
     });
   }
 
-  async findAll(companyId: string) {
-    console.log(this.prisma.event.findMany());
-    return await this.prisma.event.findMany({
-      where: { organiserId: companyId },
-    });
+  async findAll() {
+   // console.log(this.prisma.event.findMany());
+    return await this.prisma.event.findMany();
   }
 
   async findOne(id: string) {
