@@ -36,13 +36,8 @@ export class ProductsService {
     });
   }
 
-  async findAll(companyId: string) {
-    return await this.prisma.product.findMany({
-      where: { companyInfoId: companyId },
-      include: {
-        companyInfo: true,
-      },
-    });
+  async findAll() {
+    return await this.prisma.product.findMany();
   }
 
   async findOne(id: string) {

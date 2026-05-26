@@ -49,14 +49,14 @@ export class ProductsController {
   }
 
   @Get()
-  @UseGuards(AuthGuard)
+ // @UseGuards(AuthGuard)
   @ApiOperation({ summary: 'Get all products for a company' })
   @ApiQuery({ name: 'companyId', required: true, type: String })
   async findAll(@Query('companyId') companyId: string) {
     if (!companyId) {
       throw new BadRequestException('Company ID is required');
     }
-    return await this.productsService.findAll(companyId);
+    return await this.productsService.findAll();
   }
 
   @Get(':id')
