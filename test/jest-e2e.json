@@ -5,5 +5,16 @@
   "testRegex": ".e2e-spec.ts$",
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
+  },
+  "moduleNameMapper": {
+    "^src/(.*)$": "<rootDir>/../src/$1",
+    "^@prisma/client$": "<rootDir>/../node_modules/@prisma/client"
+  },
+  "modulePaths": ["<rootDir>", "<rootDir>/../"],
+  "setupFilesAfterEnv": ["<rootDir>/setup.ts"],
+  "testTimeout": 30000,
+  "preset": "ts-jest",
+  "testEnvironmentOptions": {
+    "url": "http://localhost:3000"
   }
 }
